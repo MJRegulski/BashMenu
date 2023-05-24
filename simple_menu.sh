@@ -16,6 +16,10 @@ padding_size=4
 line_size=70
 longest_text=0
 
+# user variables
+declare -a options
+declare title
+
 # checkWidth( options(array) )
 function checkWidth()
 {
@@ -33,12 +37,21 @@ function checkWidth()
     echo $size 
 }
 
-
+# header ( title )
 function header()
 {
     generateBorder
     generateText  
-    generateText "header" " Chyba dzialo "
+    generateText "header" "$title"
+    generateText
+    generateBorder
+}
+
+# body ( options(array) )
+function body()
+{
+    generateText
+    generateOptions
     generateText
     generateBorder
 }
@@ -62,56 +75,54 @@ function generateBorder()
     echo -e "$string"
 }
 
-# generateText ( text, type )
+# generateText ( type, text )
 function generateText()
 {
     local border_width=1
-    local padding_size=0
     local padding_remaining=0
     local characters=$(( $line_size - $border_width*2))
+    local padding=$padding_size
     local padLeft=""
     local padRight=""
     local border=$symbol
-    case $1 in
-        "header")
-            padding_size=$(( ($characters - ${#2} ) / 2 ))
-            padding_remaining=$(( $characters - $padding_size - ${#2}))
-            padLeft=$(generatePadding $padding_size)
-            padRight=$(generatePadding $padding_remaining)
-            echo "${gbc}$border$padLeft$2$padRight$border"
-            ;;
-        "option")
-            ;;
-        "settings")
-            ;;
-
-        *)
-            echo "${gbc}$border$(generatePadding $characters)$border"
-            ;;
-    esac
+    if [[ $1 = "header" ]]; then
+        padding=$(( ($characters - ${#2} ) / 2 ))
+    fi
+    # used for empty space - echo "$border$(generatePadding $characters)$border"
+    ## set up remaining padding
+    padding_remaining=$(( $characters - $padding - ${#2}))
+    padLeft=$(generatePadding $padding)
+    padRight=$(generatePadding $padding_remaining)
+    ## echo the result
+    echo "$border$padLeft$2$padRight$border"
 }
 
 # generateOptions( options(array) )
 function generateOptions()
 {
     local size=0
-    local options=("$@")
     local index=1
-    for item in $options 
+    for item in "${options[@]}" 
     do
-        echo "$index.$item"
-        (($index++))
+        generateText "options" "$index. $item"
+        ((index++))
     done
 }
 
-# generateMenu( title, options(array), type )
+# generateMenu( title, options(array) )
 function generateMenu()
 {
+    ## save user variables
+    options=("${@:2}")
+    title=$1
     clear
     header
-    options=("one" "two" "three" "four" "heehehehehe" "one")
-    longest_text=$(checkWidth "${options[@]}")
+    body 
+    echo 
+    #longest_text=$(checkWidth "${options[@]}")
 }
 
 # Testing ground!
-generateMenu
+opt=("Siemens" "Allen Bradley" "ABB" "Omron" "Delta" "Honeywell" "GeFanuc" "Schneider Electric" "WAGO")
+plc="Top PLC brands"
+generateMenu "${plc}" "${opt[@]}"
