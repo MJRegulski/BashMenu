@@ -1,0 +1,9 @@
+<id>basic_stack</id>
+<parent></parent>
+<title>WAGO Basic Stack</title>
+<menu>
+    <option>Docker</option>
+    <option>Settings</option>
+    <option>Menu preferences</option>
+    <option command="">About</option>
+</menu>

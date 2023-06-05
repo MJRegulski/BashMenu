@@ -1,0 +1,8 @@
+<id>settings</id>
+<parent>basic_stack</parent>
+<title>Settings</title>
+<menu>
+    <option command="">SSL Skip</option>
+    <option command="">HTTP Verify</option>
+    <option command="">Retain settings</option>
+</menu>
