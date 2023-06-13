@@ -21,6 +21,8 @@ function readDom() {
 }
 
 function extractData() {
+    menu=[]
+    options=()
     while readDom; do
         ## comparator checks if entity contains a phrase
         case $ENTITY in
