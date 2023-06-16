@@ -19,7 +19,8 @@ declare empty_line
 declare -i longest_text
 
 # user variables
-options=("${@:2}")
+options=("${@:3}")
+childMenu=$2
 title="$1"
 
 # checkWidth( options(array) )
@@ -52,7 +53,13 @@ function header() {
 function body() {
     echo "$empty_line"
     generateOptions
+    [[ $childMenu -eq 1 ]] && generateBackButton
     echo "$empty_line"
+    echo "$border"
+}
+
+function footer() {
+    generateMenuFooter
     echo "$border"
 }
 
@@ -103,6 +110,15 @@ function generateOptions() {
     done
 }
 
+function generateBackButton() {
+    generateText "back" "< Back.."
+}
+
+function generateMenuFooter() {
+    generateText "footer" "Move: ARROW UP/DOWN      |    Select: ENTER"
+    generateText "footer" "Back: ESCAPE             |    Quit:   Q"  
+}
+
 # generateMenu( title, options(array) )
 function generateMenu() {
     ## save user variables
@@ -111,6 +127,7 @@ function generateMenu() {
     clear
     header
     body  
+    footer
     #longest_text=$(checkWidth "${options[@]}")
 }
 

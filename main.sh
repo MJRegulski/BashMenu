@@ -1,22 +1,17 @@
 #!/bin/bash
 
+# Import files
+source read_xml.sh
 
-highlight=7
+# Declare variables
+declare initialMenu
+declare currentMenu
+declare optMax
+currentOpt=1
 
-# ReadFile( filename )
-function ReadFile()
-{
+function ReadFileAndHighlight() {
     local FILE="$1"
-
-    while read line; do
-        echo "$line"
-    done < $FILE
-}
-
-function ReadFileAndHighlight()
-{
-    local FILE="$1"
-    local highlight=$2
+    local highlight=$(( $2 + 7 )) # Static for now; subject to change
     local n=1
 
     while read line; do
@@ -25,23 +20,45 @@ function ReadFileAndHighlight()
     done < $FILE
 }
 
+function updateCurrentMenu() {
+    currentMenu="$1"
+    file="$MYTMPDIR/$currentMenu.txt"
+    getMenu "xml/$currentMenu.xml"
+}
+
+# Initialize
+
+## Temporary folder directory & generation of xml files
+#MYTMPDIR=$(./initialise_menu.sh) || exit 1
+read -r MYTMPDIR initialMenu <<<$(./initialise_menu.sh)
+echo $MYTMPDIR $initialMenu
+trap 'rm -rf -- "$MYTMPDIR"' EXIT
 
 
-#while [ ans != "" ]; do
-#{
-#    clear
-#    [ -f file.txt ] && ReadFileAndHighlight file.txt $highlight
-#
-#    escape_char=$(printf "\u1b")
-#    read -rsn1 ans # get 1 character
-#    if [[ $ans == $escape_char ]]; then
-#        read -rsn2 ans # read 2 more chars
-#    fi
-#    case $ans in
-#        'q') echo QUITTING ; exit ;;
-#        '[A') ((highlight--)) ;;
-#        '[B') ((highlight++)) ;;
-#        *) >&2 echo 'ERR bad input'; return ;;
-#    esac
-#}
-#done
+# Main loop
+updateCurrentMenu $initialMenu 
+
+while [ ans != "" ]; do 
+{
+    #optMax=$(( ${#options[@]} + 1 ))
+    optMax=${#options[@]}
+    #clear
+    [ -f $file ] && ReadFileAndHighlight "$file" $currOpt
+    escape_char=$(printf "\u1b")
+    read -rsn1 ans # get 1 character
+    if [[ $ans == $escape_char ]]; then
+        read -rsn2 ans # read 2 more chars
+    fi
+    case $ans in
+        'q') echo QUITTING ; exit ;;
+        '[A') [[ $currOpt -gt 0 ]] && ((currOpt--)) ;;
+        '[B') [[ $currOpt -lt $optMax ]] && ((currOpt++)) ;;
+        '')     echo "ENTER! Option picked: ${options[$(( $currOpt -1 ))]}";
+                updateCurrentMenu "${options[$(( $currOpt -1 ))]}"
+                #exit
+                ;;
+        *) >&2 echo 'ERR bad input'; return ;;
+    esac
+}
+done
+
