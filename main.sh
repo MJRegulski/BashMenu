@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# Import files
+## Import files
 source read_xml.sh
 
-# Declare variables
+## Declare variables
 declare initialMenu
 declare currentMenu
 declare optMax
-currentOpt=1
+currOpt=0
 
 function ReadFileAndHighlight() {
     local FILE="$1"
@@ -23,27 +23,34 @@ function ReadFileAndHighlight() {
 function updateCurrentMenu() {
     currentMenu="$1"
     file="$MYTMPDIR/$currentMenu.txt"
-    getMenu "xml/$currentMenu.xml"
+    getMenu "xml/$currentMenu.xml" || echo "XML file is not available!"
 }
 
-# Initialize
+function attributeLoop() {
+    for key in "${!attributes[@]}"; do
+        echo "$key ${attributes[$key]}"
+    done
+}
+
+## Initialize
 
 ## Temporary folder directory & generation of xml files
-#MYTMPDIR=$(./initialise_menu.sh) || exit 1
 read -r MYTMPDIR initialMenu <<<$(./initialise_menu.sh)
-echo $MYTMPDIR $initialMenu
 trap 'rm -rf -- "$MYTMPDIR"' EXIT
 
-
-# Main loop
+## Main loop
 updateCurrentMenu $initialMenu 
 
 while [ ans != "" ]; do 
 {
-    #optMax=$(( ${#options[@]} + 1 ))
     optMax=${#options[@]}
+    #[[ "${menu[parent]}" != "" ]] && ((optMax--)) 
     #clear
     [ -f $file ] && ReadFileAndHighlight "$file" $currOpt
+    #echo "Current option number is: $currOpt"
+    #echo "Max options: $optMax"
+    #echo ${menu[parent]}
+    attributeLoop
     escape_char=$(printf "\u1b")
     read -rsn1 ans # get 1 character
     if [[ $ans == $escape_char ]]; then
@@ -53,12 +60,11 @@ while [ ans != "" ]; do
         'q') echo QUITTING ; exit ;;
         '[A') [[ $currOpt -gt 0 ]] && ((currOpt--)) ;;
         '[B') [[ $currOpt -lt $optMax ]] && ((currOpt++)) ;;
-        '')     echo "ENTER! Option picked: ${options[$(( $currOpt -1 ))]}";
-                updateCurrentMenu "${options[$(( $currOpt -1 ))]}"
-                #exit
+        '')     echo "ENTER! Option picked: ${options[ $currOpt ]}";
+                updateCurrentMenu "${options[ $currOpt ]}";
+                currOpt=0
                 ;;
         *) >&2 echo 'ERR bad input'; return ;;
     esac
 }
 done
-

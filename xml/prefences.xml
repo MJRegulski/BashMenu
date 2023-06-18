@@ -2,7 +2,7 @@
 <parent>basic_stack</parent>
 <title>Menu Preferences</title>
 <menu>
-    <option command="">Highlight Colour</option>
-    <option command="">Border Symbol</option>
-    <option command="">Retain Settings</option>
+    <option command='' >Highlight Colour</option>
+    <option command='' >Border Symbol</option>
+    <option command='' >Retain Settings</option>
 </menu>

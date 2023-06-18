@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Import files
+## Import files
 source read_xml.sh
 
-# Declare variables
+## Declare variables
 declare initialMenu
 
-# Create temporary folder
+## Create temporary folder
 MYTMPDIR=$(mktemp -d) || exit 1
 
 isChild=0
@@ -19,4 +19,5 @@ for xmlfile in "$dir"/*
     echo "$(./generate_menu.sh "${menu[title]}" $isChild "${options[@]}")" > "$MYTMPDIR/${menu[id]}".txt
 done
 
+## Return values
 echo $MYTMPDIR $initialMenu

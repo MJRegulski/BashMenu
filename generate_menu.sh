@@ -90,9 +90,7 @@ function generateText() {
     local padLeft=""
     local padRight=""
     local border=$symbol
-    if [[ $1 = "header" ]]; then
-        padding=$(( ($characters - ${#2} ) / 2 ))
-    fi 
+    [[ $1 = "header" ]] && padding=$(( ($characters - ${#2} ) / 2 ))
     ## set up remaining padding
     padding_remaining=$(( $characters - $padding - ${#2}))
     padLeft=$(generatePadding $padding)

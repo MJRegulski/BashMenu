@@ -4,14 +4,15 @@
 # - add function to save attributes
 
 declare -A menu
+attributes=()
 declare -a options
 
 xmlFileLocation="./xml/"
 declare file
 
 ## used to extract individual parameters from menu item
-function readParam() {
-    read -d "=" ATTRIBUTE VALUE
+function saveAttributes() {
+    local findAttribute=${$@#*'="'}
 }
 
 # readDom( FILE )
@@ -37,6 +38,7 @@ function extractData() {
             ;;
         "option"*)
             options+=( "$CONTENT" )
+            attributes+=( "$ENTITY" )
             ;;
         *)
             ;;
