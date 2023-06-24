@@ -4,7 +4,7 @@
 # - add function to save attributes
 
 declare -A menu
-attributes=()
+declare -a attributes
 declare -a options
 
 xmlFileLocation="./xml/"
@@ -24,6 +24,7 @@ function readDom() {
 function extractData() {
     menu=[]
     options=()
+    attributes=()
     while readDom; do
         ## comparator checks if entity contains a phrase
         case $ENTITY in
@@ -49,7 +50,7 @@ function extractData() {
 # getMenu( )
 function getMenu() {
     FILE="$1"
-    [[ -f $FILE ]] && extractData ||  exit 0 
+    [[ -f $FILE ]] && extractData ||  exit 1 
 }
 
 

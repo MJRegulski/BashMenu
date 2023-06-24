@@ -2,7 +2,7 @@
 <parent>basic_stack</parent>
 <title>Settings</title>
 <menu>
-    <option command='' >SSL Skip</option>
-    <option command='' >HTTP Verify</option>
-    <option command='' >Retain settings</option>
+    <option type='endpoint' command=''>SSL Skip</option>
+    <option type='endpoint' command=''>HTTP Verify</option>
+    <option type='endpoint' command=''>Retain settings</option>
 </menu>

@@ -2,8 +2,8 @@
 <parent></parent>
 <title>WAGO Basic Stack</title>
 <menu>
-    <option type='submenu' id='docker' >Docker</option>
-    <option type='submenu' id='settings' >Settings</option>
-    <option type='submenu' id='preferences' >Menu preferences</option>
-    <option type=' ' command="" >About</option>
+    <option type='submenu' id='docker'>Docker</option>
+    <option type='submenu' id='settings'>Settings</option>
+    <option type='submenu' id='preferences'>Menu preferences</option>
+    <option type='endpoint' command=''>About</option>
 </menu>

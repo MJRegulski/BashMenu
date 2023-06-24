@@ -1,25 +1,38 @@
 #!/bin/bash
 
+declare -A result
+
 function saveAttributes() {
-    local orig=$@
-    IFS=' ' read -ra my_array <<< "$orig"
-    #local findAttribute=${orig#*'="'}
+    local name
+    local attrib
+    local value
+    IFS=' ' read -ra my_array <<< "$@"
     for item in "${!my_array[@]}"; do
-        echo "$item ${my_array[$item]}"
+        attrib="${my_array[$item]}"
+        [[ "$attrib" == *=* ]] || continue
+        name=${attrib%=*}
+        value=${attrib#*=\'} 
+        [[ "$value" == *\>* ]] && value=${value%\'\>} || value=${value%\'}
+        result["$name"]="$value"
     done
 }
 
-
-orig='option command="echo Hello World"'
-findCommand=${orig#*'command="'}
-command=${findCommand%'" '*}
-
-findLink=${orig#*'link="'}
-link=${findLink%'" '*} || link=${findLink%'">'*}
+orig="option type='submenu' id='preferences'>"
 
 
-printf "Result:\n"
+#findCommand=${orig#*'command="'}
+#command=${findCommand%'" '*}
+
+#findLink=${orig#*'link="'}
+#link=${findLink%'" '*} || link=${findLink%'">'*}
+
+
+printf "Init string:"
 printf "$orig\n"
 saveAttributes "$orig"
+printf "Result:"
+for key in "${!result[@]}"; do
+    echo "$key ${result[$key]}"
+done
 #printf "$command\n"
 #printf "$link\n"

@@ -2,7 +2,7 @@
 <parent>basic_stack</parent>
 <title>Docker</title>
 <menu>
-    <option command='' >Install Docker</option>
-    <option command='' >Install Basic Stack</option>
-    <option command='' >Individual install..</option>
+    <option type='endpoint' command=''>Install Docker</option>
+    <option type='endpoint' command=''>Install Basic Stack</option>
+    <option type='endpoint' command=''>Individual install..</option>
 </menu>

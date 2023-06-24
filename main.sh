@@ -5,8 +5,9 @@ source read_xml.sh
 
 ## Declare variables
 declare initialMenu
-declare currentMenu
+declare lastMenuID
 declare optMax
+declare -A selectedOptAttribs
 currOpt=0
 
 function ReadFileAndHighlight() {
@@ -21,7 +22,8 @@ function ReadFileAndHighlight() {
 }
 
 function updateCurrentMenu() {
-    currentMenu="$1"
+    local currentMenu="$1"
+    lastMenuID="${menu[id]}"
     file="$MYTMPDIR/$currentMenu.txt"
     getMenu "xml/$currentMenu.xml" || echo "XML file is not available!"
 }
@@ -30,6 +32,42 @@ function attributeLoop() {
     for key in "${!attributes[@]}"; do
         echo "$key ${attributes[$key]}"
     done
+}
+
+function saveAttributes() {
+    local name
+    local attrib
+    local value
+    IFS=' ' read -ra my_array <<< "$@"
+    [[ -z "${my_array[@]}" ]] && return 1
+    for item in "${!my_array[@]}"; do
+        attrib="${my_array[$item]}"
+        [[ "$attrib" == *=* ]] || continue
+        name=${attrib%=*}
+        value=${attrib#*=\'} 
+        [[ "$value" == *\>* ]] && value=${value%\'\>} || value=${value%\'}
+        selectedOptAttribs["$name"]="$value"
+    done
+}
+
+function updateMenu() {
+    saveAttributes "${attributes[$currOpt]}" || selectedOptAttribs[type]="back" 
+    case "${selectedOptAttribs[type]}" in
+        "submenu")
+                    updateCurrentMenu "${selectedOptAttribs[id]}"
+                    ;;
+        "endpoint")
+                    echo "this is where it ends.."
+                    exit
+                    ;;
+        "back")
+                    updateCurrentMenu "${menu[parent]}"
+                    ;;
+        *)
+                    echo "wrong input.."
+                    exit
+                    ;;
+    esac
 }
 
 ## Initialize
@@ -44,27 +82,24 @@ updateCurrentMenu $initialMenu
 while [ ans != "" ]; do 
 {
     optMax=${#options[@]}
-    #[[ "${menu[parent]}" != "" ]] && ((optMax--)) 
-    #clear
     [ -f $file ] && ReadFileAndHighlight "$file" $currOpt
-    #echo "Current option number is: $currOpt"
-    #echo "Max options: $optMax"
-    #echo ${menu[parent]}
-    attributeLoop
+    [[ "${menu[parent]}" = "" ]] && ((optMax--)) 
     escape_char=$(printf "\u1b")
     read -rsn1 ans # get 1 character
     if [[ $ans == $escape_char ]]; then
         read -rsn2 ans # read 2 more chars
     fi
     case $ans in
-        'q') echo QUITTING ; exit ;;
-        '[A') [[ $currOpt -gt 0 ]] && ((currOpt--)) ;;
-        '[B') [[ $currOpt -lt $optMax ]] && ((currOpt++)) ;;
-        '')     echo "ENTER! Option picked: ${options[ $currOpt ]}";
-                updateCurrentMenu "${options[ $currOpt ]}";
-                currOpt=0
-                ;;
-        *) >&2 echo 'ERR bad input'; return ;;
+        'q') 
+                echo QUITTING ; exit ;;
+        '[A') 
+                [[ $currOpt -gt 0 ]] && ((currOpt--)) ;;
+        '[B') 
+                [[ $currOpt -lt $optMax ]] && ((currOpt++)) ;;
+        '')     
+                updateMenu
+                currOpt=0 ;;
+        *)      return ;;
     esac
 }
 done
