@@ -34,30 +34,41 @@ function attributeLoop() {
     done
 }
 
-function saveAttributes() {
-    local name
-    local attrib
-    local value
-    IFS=' ' read -ra my_array <<< "$@"
-    [[ -z "${my_array[@]}" ]] && return 1
-    for item in "${!my_array[@]}"; do
-        attrib="${my_array[$item]}"
-        [[ "$attrib" == *=* ]] || continue
-        name=${attrib%=*}
-        value=${attrib#*=\'} 
-        [[ "$value" == *\>* ]] && value=${value%\'\>} || value=${value%\'}
-        selectedOptAttribs["$name"]="$value"
+function finalAttributeLoop() {
+    for key in "${!my_array[@]}"; do
+        echo "$key ${my_array[$key]}"
     done
 }
 
+function saveAttributes() {
+    local name
+    local value
+    local rawString="$@"
+
+    [[ -z $rawString ]] && return 1
+
+    while [[ $rawString ]]; do
+        shopt -s extglob    # Turn on the extglob shell option 
+        rawString="${rawString##*( )}" && rawString="${rawString%%*( )}" #trim leading and trailing whitespaces
+        shopt -u extglob    # Turn off
+        name=${rawString%%=\'*}
+        rawString=${rawString#*=\'}
+        value=${rawString%%\'*}
+        rawString=${rawString#*\'}
+        selectedOptAttribs[$name]="$value"
+    done   
+}
+
 function updateMenu() {
-    saveAttributes "${attributes[$currOpt]}" || selectedOptAttribs[type]="back" 
+    saveAttributes "${attributes[$currOpt]}" || selectedOptAttribs[type]="back"
+    finalAttributeLoop
     case "${selectedOptAttribs[type]}" in
         "submenu")
                     updateCurrentMenu "${selectedOptAttribs[id]}"
                     ;;
         "endpoint")
-                    echo "this is where it ends.."
+                    echo "${selectedOptAttribs[command]}"
+                    eval "${selectedOptAttribs[command]}"
                     exit
                     ;;
         "back")
@@ -68,6 +79,7 @@ function updateMenu() {
                     exit
                     ;;
     esac
+
 }
 
 ## Initialize

@@ -16,7 +16,8 @@ for xmlfile in "$dir"/*
     do
     getMenu "$xmlfile"
     [[ "${menu[parent]}" = "" ]] && initialMenu="${menu[id]}" || isChild=1
-    echo "$(./generate_menu.sh "${menu[title]}" $isChild "${options[@]}")" > "$MYTMPDIR/${menu[id]}".txt
+    echo "$(./generate_menu.sh "${menu[title]}" $isChild "options" "${options[@]}" )" > "$MYTMPDIR/${menu[id]}".txt
+    #echo "$(./generate_menu.sh "${menu[title]}" $isChild "${options[@]}")" > "$MYTMPDIR/${menu[id]}".txt
 done
 
 ## Return values

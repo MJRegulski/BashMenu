@@ -19,7 +19,8 @@ declare empty_line
 declare -i longest_text
 
 # user variables
-options=("${@:3}")
+options=("${@:4}")
+type=$3
 childMenu=$2
 title="$1"
 
@@ -31,7 +32,7 @@ function checkWidth() {
     for (( i=0; i<$len; i++ )); do 
         local item=${options[i]}
         ## compare current value to last
-        if [[ ${#item} -gt size ]]; then size=${#item} ; fi
+        [[ ${#item} -gt size ]] && size=${#item}
     done
     echo $size
 }
@@ -69,7 +70,6 @@ function generatePadding() {
     for (( i=0; i < $1; i++ )); do
         string+="$padding_symbol";
     done
-    ## echo the result
     echo "$string"
 }
 
@@ -117,11 +117,8 @@ function generateMenuFooter() {
     generateText "footer" "Back: ESCAPE             |    Quit:   Q"  
 }
 
-# generateMenu( title, options(array) )
+# generateMenu( )
 function generateMenu() {
-    ## save user variables
-    #options=("${@:2}")
-    #title=$1
     clear
     header
     body  

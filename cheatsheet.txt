@@ -67,3 +67,9 @@ trap "rm -f $tmp_file" 0 1 2 5 15
 https://ss64.com/bash/mktemp.html
 other use:
 trap 'rm -rf -- "tmp"' EXIT
+
+
+Running command saved in a string variable:
+source: https://unix.stackexchange.com/questions/356534/how-to-run-string-with-values-as-a-command-in-bash
+
+eval "$command"

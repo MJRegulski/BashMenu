@@ -10,17 +10,18 @@ declare -a options
 xmlFileLocation="./xml/"
 declare file
 
-## used to extract individual parameters from menu item
-function saveAttributes() {
-    local findAttribute=${$@#*'="'}
+function cleanUpEntityString() {
+    local rawString="$ENTITY"
+    local tmp=${rawString#* }
+
 }
 
-# readDom( FILE )
+# readDom( )
 function readDom() {
     local IFS=\>
     read -d \< ENTITY CONTENT
 }
-
+# extractData( )
 function extractData() {
     menu=[]
     options=()
@@ -39,7 +40,7 @@ function extractData() {
             ;;
         "option"*)
             options+=( "$CONTENT" )
-            attributes+=( "$ENTITY" )
+            attributes+=( "${ENTITY#* }" ) # used to strip initial 'option' out of the string
             ;;
         *)
             ;;
@@ -47,7 +48,7 @@ function extractData() {
     done < $FILE
 }
 
-# getMenu( )
+# getMenu( filename )
 function getMenu() {
     FILE="$1"
     [[ -f $FILE ]] && extractData ||  exit 1 
