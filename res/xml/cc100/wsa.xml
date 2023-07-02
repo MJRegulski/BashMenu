@@ -1,9 +1,9 @@
-<id>basic_stack</id>
+<id>wsa</id>
 <parent></parent>
-<title>WAGO Basic Stack</title>
+<title>WAGO Shell Assistant [WSA]</title>
 <menu>
     <option type='submenu' id='docker'>Docker</option>
     <option type='submenu' id='settings'>Settings</option>
     <option type='submenu' id='preferences'>Menu preferences</option>
-    <option type='endpoint' command='./test2.sh'>About</option>
+    <option type='endpoint' command='./about.sh'>About</option>
 </menu>

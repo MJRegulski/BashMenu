@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# Quick notes:
-# - check tput for inputing colours; example = lightblue=$(tput setaf 123)
-# - optimise generateText option for shorter execution (PRIORITY)
+## Quick notes:
+## - check tput for inputing colours; example = lightblue=$(tput setaf 123)
+## - optimise generateText option for shorter execution (PRIORITY)
 
-# include xml file script
+## include xml file script
 source read_xml.sh
 
-# Configuration
+## Configuration
 symbol="*"
 padding_symbol=" "
 padding_size=4
@@ -18,13 +18,13 @@ declare border
 declare empty_line
 declare -i longest_text
 
-# user variables
-options=("${@:4}")
-type=$3
-childMenu=$2
-title="$1"
+## user variables
+title="$1"              ## string to appear in menu header
+childMenu=$2            ## 0 = no parent, 1 = parent exists
+type="$3"               ## see body function for more details
+options=("${@:4}")      ## array of options to display in the menu
 
-# checkWidth( options(array) )
+## checkWidth( options(array) )
 function checkWidth() {
     local size=0
     ## get length of $options array
@@ -37,7 +37,7 @@ function checkWidth() {
     echo $size
 }
 
-# header ( title )
+## header ( title )
 function header() {
     ## generate known lines
     border=$(generateBorder)
@@ -50,10 +50,19 @@ function header() {
     echo "$border"
 }
 
-# body ( options(array) )
+## body ( options(array) )
 function body() {
     echo "$empty_line"
-    generateOptions
+    case $type in
+        "options")
+            [ -n "$options" ] && generateOptions ;;
+        "toggle")
+            generateToggle "Enable" 
+            generateToggle "Disable";;
+        *)
+            generateText "error" "Error - no type has been selected when generating this menu.";;
+    esac
+
     [[ $childMenu -eq 1 ]] && generateBackButton
     echo "$empty_line"
     echo "$border"
@@ -64,13 +73,13 @@ function footer() {
     echo "$border"
 }
 
-# generatePadding( amount )
+## generatePadding( amount )
 function generatePadding() {
     local string=""
     for (( i=0; i < $1; i++ )); do
         string+="$padding_symbol";
     done
-    echo "$string"
+    printf "$string"
 }
 
 function generateBorder() {
@@ -82,30 +91,30 @@ function generateBorder() {
     echo -e "$string"
 }
 
-# generateText ( type, text )
+## generateText ( type, text )
 function generateText() {
-    local padding_remaining=0
     local characters=$(( $line_size - $border_width*2))
-    local padding=$padding_size
-    local padLeft=""
-    local padRight=""
-    local border=$symbol
-    [[ $1 = "header" ]] && padding=$(( ($characters - ${#2} ) / 2 ))
+    [ "$1" = "header" ] && local padding=$(( ($characters - ${#2} ) / 2 )) || local padding=$padding_size
     ## set up remaining padding
-    padding_remaining=$(( $characters - $padding - ${#2}))
-    padLeft=$(generatePadding $padding)
-    padRight=$(generatePadding $padding_remaining)
+    local padding_remaining=$(( $characters - $padding - ${#2}))
+    local padLeft=$(generatePadding $padding)
+    local padRight=$(generatePadding $padding_remaining)
     ## echo the result
-    echo "$border$padLeft$2$padRight$border"
+    printf "$symbol$padLeft$2$padRight$symbol\n"
 }
 
-# generateOptions( options(array) )
+## generateOptions( options(array) )
 function generateOptions() {
     local index=1
     for item in "${options[@]}"; do
         generateText "options" "$index. $item"
         ((index++))
     done
+}
+
+## generateToggle ( text )
+function generateToggle() {
+    generateText "toggle" "[ ]  $1"
 }
 
 function generateBackButton() {
@@ -117,7 +126,7 @@ function generateMenuFooter() {
     generateText "footer" "Back: ESCAPE             |    Quit:   Q"  
 }
 
-# generateMenu( )
+## generateMenu( )
 function generateMenu() {
     clear
     header
@@ -127,4 +136,4 @@ function generateMenu() {
 }
 
 ## Main
-generateMenu
+ [ -n "$title" ] && [ -n "$type" ]  && generateMenu

@@ -1,5 +1,5 @@
 <id>preferences</id>
-<parent>basic_stack</parent>
+<parent>wsa</parent>
 <title>Menu Preferences</title>
 <menu>
     <option type='endpoint' command=''>Highlight Colour</option>

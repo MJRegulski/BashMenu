@@ -1,8 +1,0 @@
-<id>docker</id>
-<parent>basic_stack</parent>
-<title>Docker</title>
-<menu>
-    <option type='endpoint' command=''>Install Docker</option>
-    <option type='endpoint' command=''>Install Basic Stack</option>
-    <option type='endpoint' command=''>Individual install..</option>
-</menu>
